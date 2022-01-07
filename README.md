@@ -1,2 +1,1 @@
-# Test repo for img fetching
-
+# Test repo for image fetching
