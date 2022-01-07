@@ -3,6 +3,7 @@ import React from 'react';
 class StoryModal extends React.Component {
     render() {
         return (
+            // Vanilla bootstrap modal for testing purposes
             <div className="modal fade" id="exampleModalCenter" tabIndex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered" role="document">
                 <div className="modal-content">
