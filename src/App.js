@@ -8,10 +8,10 @@ const API = ''
 class App extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		keyword: '',
-		story_list: [],
-		isSubmitted: false
+			this.state = {
+			keyword: '',
+			story_list: [],
+			isSubmitted: false
 		}
 	}
 
