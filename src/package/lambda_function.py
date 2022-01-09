@@ -22,6 +22,8 @@ def pull_story_list(html):
             }
     return story_list
 
+# Build chapter db for a given series here, return to user the info for queried series
+
 def lambda_handler(event, context):
     print(event)
     if event['rawPath'] == '/search':

@@ -1,37 +1,40 @@
 import React from 'react';
-
+import './Story.css';
 import StoryModal from './StoryModal';
 
 class Story extends React.Component {
 	constructor(props) {
 		super(props); 
 		this.state = {
-			showModal: false
+			modalState: false
 		}
 	}
-	
-	handleModal = e => {
-		if (this.state.showModal) {
-			this.setState({ showModal: false });
-		} else { this.setState({ showModal: true }); } 
-	}
+
+	handleModalShow = () => {this.setState({modalState: true});}
+	handleModalClose = () => {this.setState({modalState: false});}
+
+	// On each series, dl button fires GET to api about the series, lambda returns info about series in modal
 
 	render() {
 		return (
 			<div className="card">
 				{/* <img className="card-img-top" src={`${ this.props.thumbnail }`} alt={ this.props.title } /> */}
 				<div className="card-body">
-					<h5 className="card-title">{ this.props.title }</h5>
+					<h5 className="card-title">{this.props.title}</h5>
 				</div>
 				<div className="card-footer">
-					<button type="button" onClick={ this.handleModal } className="btn btn-primary">Download</button>
-				{ this.state.showModal &&
-					<StoryModal 
-						showModal={ this.state.showModal }
-						handleModal={ this.handleModal }
-					/>
-				}	
+					<button 
+						type="button" 
+						className="btn btn-primary" 
+						onClick={this.handleModalShow}>
+							Fetch Info
+					</button>
 				</div>
+				<StoryModal 
+					modalState={this.state.modalState}
+					handleModalClose={this.handleModalClose}
+					title={this.props.title}
+				/>
 			</div>
 		);
 	}

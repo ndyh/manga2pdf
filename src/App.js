@@ -15,7 +15,7 @@ class App extends React.Component {
 		}
 	}
 
-	handleChange = e => { this.setState({ keyword: e.target.value }); } // Set keyword state to search bar text value
+	handleChange = e => {this.setState({ keyword: e.target.value });} // Set keyword state to search bar text value
 
 	handleSubmit = e => {
 		e.preventDefault(); // Prevent form from default submission
@@ -26,7 +26,7 @@ class App extends React.Component {
 		.then((response) => {
 			this.setState({
 				story_list: Object.entries(response.data),
-				isSubmitted: true
+				isSubmitted: true,
 			});
 			console.log(this.state.story_list);
 		});
@@ -37,24 +37,24 @@ class App extends React.Component {
 			<div className="App">
 				<h1>Manga2PDF</h1>
 				<div className="search-form">
-				<form onSubmit={ this.handleSubmit }>
+				<form onSubmit={this.handleSubmit}>
 					<input 
 						type="text"
 						placeholder="Search for a series"
-						value={ this.state.keyword }
-						onChange={ this.handleChange }
+						value={this.state.keyword}
+						onChange={this.handleChange}
 					/>
 					<input type="submit" name="Search" value="Search" />
 				</form>
 				</div>
 				{this.state.isSubmitted &&
-				<div className="story-list card-deck">
+				<div className="story-list">
 					{this.state.story_list.map((s) => (
 						<Story 
-							title={ s[1].title }
-							link={ s[0] }
-							thumbnail={ s[1].thumbnail }
-							chapters={ s[1].chapters }
+							title={s[1].title}
+							link={s[0]}
+							thumbnail={s[1].thumbnail}
+							chapters={s[1].chapters}
 						/>
 					))}
 				</div>
