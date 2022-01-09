@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 def parser(url):
-    return BeautifulSoul(requests.get(url).content, 'html.parser')
+    return BeautifulSoup(requests.get(url).content, 'html.parser')
     
 def pull_story_list(html):
     story_list = {}
@@ -18,13 +18,14 @@ def pull_story_list(html):
             story_list[link] = {
                 'title': title,
                 'thumbnail': img_src,
-                'chapters': {}
+                'chapters': []
             }
+    return story_list
 
 def lambda_handler(event, context):
     print(event)
     if event['rawPath'] == '/search':
         keyword = event['queryStringParameters']['q']
         # get list of series here
-        parser(f'https://manganato.com/search/story/{keyword}')
-        
+        story_list = pull_story_list(parser(f'https://manganato.com/search/story/{keyword}'))
+        return story_list
