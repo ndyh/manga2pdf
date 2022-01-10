@@ -23,12 +23,16 @@ def pull_story_list(html):
     return story_list
     
 def pull_story_info(html):
-    story = {}
     counter = 0
-    container = html.find('ul', {'class': 'row-content-chapter'})
-    for item in container.find_all('li', {'class': 'a-h'}):
+    desc = html.find('div', {'id': 'panel-story-info-description'}).text
+    chapter_container = html.find('ul', {'class': 'row-content-chapter'})
+    for chapter in chapter_container.find_all('li', {'class': 'a-h'}):
         counter = counter + 1
-    return counter
+    info = {
+        'desc': desc,
+        'chapters': counter
+    }
+    return info
 
 def lambda_handler(event, context):
     print(event)

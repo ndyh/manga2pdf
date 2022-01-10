@@ -15,7 +15,10 @@ class StoryModal extends React.Component {
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.title}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{this.props.chapter_count}</Modal.Body>
+                <Modal.Body>
+                    <div className='desc'>{this.props.info.desc}</div>
+                    <div className='cc'>Chapters: {this.props.info.chapters}</div>
+                </Modal.Body>
             </Modal>
         );
     }

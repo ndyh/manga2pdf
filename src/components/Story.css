@@ -1,1 +1,41 @@
 /* .card { cursor: pointer; } */
+
+.card {
+    max-height: 125px;
+}
+
+.card-body {
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    overflow: hidden;
+    padding: 0;
+    background-color: black;
+}
+
+.card-img-top {
+    background-color: rgba(0, 0, 0, 20%);
+    opacity: 30%;
+    margin-left: 0;
+    margin-right: 0;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+.card-title {
+    color: white;
+    position: absolute;
+    top: 34%;
+    left: 50%;
+    min-width: 80%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
+.card-footer {
+    padding: 0;
+}
+
+.fetch-info-btn {
+    min-width: 100%;
+}

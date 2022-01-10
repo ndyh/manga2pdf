@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import './App.css';
 import Story from './components/Story';
 
 import {API} from './.config';
@@ -33,21 +34,21 @@ class App extends React.Component {
 
 	render() {
 		return (
-			<div className="App">
-				<h1>Manga2PDF</h1>
+			<div className='App'>
+				<h1><a  className='title' href='/'>Manga2PDF</a></h1>
 				<div className="search-form">
-				<form onSubmit={this.handleSubmit}>
-					<input 
-						type="text"
-						placeholder="Search for a series"
-						value={this.state.keyword}
-						onChange={this.handleChange}
-					/>
-					<input type="submit" name="Search" value="Search" />
-				</form>
+					<form onSubmit={this.handleSubmit}>
+						<input 
+							type='text'
+							placeholder='Search for a series'
+							value={this.state.keyword}
+							onChange={this.handleChange}
+						/>
+						<input type='submit' name='Search' value='Search' />
+					</form>
 				</div>
 				{this.state.isSubmitted &&
-				<div className="story-list card-deck">
+				<div className='story-list card-deck'>
 					{ Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
 						<div className='row'>
 							{ this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (

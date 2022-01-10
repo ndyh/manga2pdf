@@ -10,7 +10,7 @@ class Story extends React.Component {
 		super(props); 
 		this.state = {
 			modalState: false,
-			story_info: 0
+			story_info: ''
 		}
 	}
 
@@ -21,23 +21,29 @@ class Story extends React.Component {
 		axios.get(`${API}f?s=${e.target.value}`)
 		.then((response) => {
 			console.log(e.target.value)
+			console.log(response.data)
 			this.setState({story_info: response.data})
 		});
 	}
 
 	// On each series, dl button fires GET to api about the series, lambda returns info about series in modal
+	// Over 700 chapter series throw Interal Server Error 500. See Naruto / One Piece
 
 	render() {
 		return (
 			<div className="card">
-				{/* <img className="card-img-top" src={`${ this.props.thumbnail }`} alt={ this.props.title } /> */}
 				<div className="card-body">
+					<img 
+						className="card-img-top img-fluid" 
+						src={`${this.props.story[1].thumbnail}`} 
+						alt={this.props.story[1].title} 
+					/>
 					<h5 className="card-title">{this.props.story[1].title}</h5>
 				</div>
 				<div className="card-footer">
 					<button 
 						type="button" 
-						className="btn btn-primary"
+						className="fetch-info-btn btn btn-primary"
 						value={this.props.story[0]} 
 						onClick={this.handleFetchInfo}>
 							Fetch Info
@@ -47,7 +53,7 @@ class Story extends React.Component {
 					modalState={this.state.modalState}
 					handleModalClose={this.handleModalClose}
 					title={this.props.story[1].title}
-					chapter_count={this.state.story_info}
+					info={this.state.story_info}
 				/>
 			</div>
 		);
