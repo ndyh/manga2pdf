@@ -21,8 +21,14 @@ def pull_story_list(html):
                 'chapters': []
             }
     return story_list
-
-# Build chapter db for a given series here, return to user the info for queried series
+    
+def pull_story_info(html):
+    story = {}
+    counter = 0
+    container = html.find('ul', {'class': 'row-content-chapter'})
+    for item in container.find_all('li', {'class': 'a-h'}):
+        counter = counter + 1
+    return counter
 
 def lambda_handler(event, context):
     print(event)
@@ -31,3 +37,6 @@ def lambda_handler(event, context):
         # get list of series here
         story_list = pull_story_list(parser(f'https://manganato.com/search/story/{keyword}'))
         return story_list
+    elif event['rawPath'] == '/f':
+        story_info = pull_story_info(parser(event['queryStringParameters']['s']))
+        return story_info

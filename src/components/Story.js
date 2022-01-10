@@ -1,17 +1,29 @@
 import React from 'react';
+import axios from 'axios';
 import './Story.css';
 import StoryModal from './StoryModal';
+
+import {API} from '../.config';
 
 class Story extends React.Component {
 	constructor(props) {
 		super(props); 
 		this.state = {
-			modalState: false
+			modalState: false,
+			story_info: 0
 		}
 	}
 
-	handleModalShow = () => {this.setState({modalState: true});}
 	handleModalClose = () => {this.setState({modalState: false});}
+
+	handleFetchInfo = (e) => {
+		this.setState({modalState: true});
+		axios.get(`${API}f?s=${e.target.value}`)
+		.then((response) => {
+			console.log(e.target.value)
+			this.setState({story_info: response.data})
+		});
+	}
 
 	// On each series, dl button fires GET to api about the series, lambda returns info about series in modal
 
@@ -25,8 +37,9 @@ class Story extends React.Component {
 				<div className="card-footer">
 					<button 
 						type="button" 
-						className="btn btn-primary" 
-						onClick={this.handleModalShow}>
+						className="btn btn-primary"
+						value={this.props.story[0]} 
+						onClick={this.handleFetchInfo}>
 							Fetch Info
 					</button>
 				</div>
@@ -34,6 +47,7 @@ class Story extends React.Component {
 					modalState={this.state.modalState}
 					handleModalClose={this.handleModalClose}
 					title={this.props.story[1].title}
+					chapter_count={this.state.story_info}
 				/>
 			</div>
 		);

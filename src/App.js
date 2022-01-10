@@ -1,9 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-
 import Story from './components/Story';
 
-const API = ''
+import {API} from './.config';
 
 class App extends React.Component {
 	constructor(props) {
@@ -52,7 +51,7 @@ class App extends React.Component {
 					{ Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
 						<div className='row'>
 							{ this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (
-								<div className='col'>
+								<div className='col-6 col-md-4'>
 									<Story story={story} />
 								</div>
 							))}
