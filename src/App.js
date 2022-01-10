@@ -48,7 +48,7 @@ class App extends React.Component {
 				</form>
 				</div>
 				{this.state.isSubmitted &&
-				<div className="story-list">
+				<div className="story-list card-deck">
 					{ Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
 						<div className='row'>
 							{ this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (
