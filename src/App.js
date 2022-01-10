@@ -49,13 +49,14 @@ class App extends React.Component {
 				</div>
 				{this.state.isSubmitted &&
 				<div className="story-list">
-					{this.state.story_list.map((s) => (
-						<Story 
-							title={s[1].title}
-							link={s[0]}
-							thumbnail={s[1].thumbnail}
-							chapters={s[1].chapters}
-						/>
+					{ Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
+						<div className='row'>
+							{ this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (
+								<div className='col'>
+									<Story story={story} />
+								</div>
+							))}
+						</div>
 					))}
 				</div>
 				}

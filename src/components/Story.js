@@ -20,7 +20,7 @@ class Story extends React.Component {
 			<div className="card">
 				{/* <img className="card-img-top" src={`${ this.props.thumbnail }`} alt={ this.props.title } /> */}
 				<div className="card-body">
-					<h5 className="card-title">{this.props.title}</h5>
+					<h5 className="card-title">{this.props.story[1].title}</h5>
 				</div>
 				<div className="card-footer">
 					<button 
@@ -33,7 +33,7 @@ class Story extends React.Component {
 				<StoryModal 
 					modalState={this.state.modalState}
 					handleModalClose={this.handleModalClose}
-					title={this.props.title}
+					title={this.props.story[1].title}
 				/>
 			</div>
 		);
