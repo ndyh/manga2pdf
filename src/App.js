@@ -22,7 +22,7 @@ class App extends React.Component {
 
 		// Take user keyword from search bar, make request to aws api to execute lambda function
 		// Return relevant data, set boolean to true to render list of data
-		axios.get(`${API}search?q=${this.state.keyword.replace(/ /g, '_')}`)
+		axios.get(`${API}s?q=${this.state.keyword.replace(/ /g, '_')}`)
 		.then((response) => {
 			this.setState({
 				story_list: Object.entries(response.data),

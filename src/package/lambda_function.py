@@ -25,6 +25,7 @@ def pull_story_list(html):
 def pull_story_info(html):
     counter = 0
     desc = html.find('div', {'id': 'panel-story-info-description'}).text
+    print(desc)
     chapter_container = html.find('ul', {'class': 'row-content-chapter'})
     for chapter in chapter_container.find_all('li', {'class': 'a-h'}):
         counter = counter + 1
@@ -32,10 +33,10 @@ def pull_story_info(html):
         'desc': desc,
         'chapters': counter
     }
+    print(info)
     return info
 
 def lambda_handler(event, context):
-    story_list, story_info = ''
     print(event)
     if event['rawPath'] == '/s':
         keyword = event['queryStringParameters']['q']
@@ -48,4 +49,7 @@ def lambda_handler(event, context):
     elif event['rawPath'] == '/c':
         # chap selection = event['queryStringParameters']['cs']
         # need both story selection and chapter total val/all chapters
-        return 0
+        chapter_min = event['queryStringParameters']['f']
+        chapter_max = event['queryStringParameters']['l']
+
+        return (f'First: {chapter_min} | Last {chapter_max}')

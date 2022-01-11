@@ -1,14 +1,17 @@
 import React from 'react';
 import {Modal} from 'react-bootstrap';
-
+import axios from 'axios';
 import './StoryModal.css';
+
+import {API} from '../.config';
 
 class StoryModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             c_min: 0,
-            c_max: 0
+            c_max: 0,
+            c_response: ''
         }
     }
 
@@ -16,8 +19,11 @@ class StoryModal extends React.Component {
 
     handleMaxChange = (e) => {this.setState({c_max: e.target.value});}
 
-    handleConversion = (e) => {
-        return 0
+    handleConversionRequest = () => {
+        axios.get(`${API}c?f=${this.state.c_min}&l=${this.state.c_max}`)
+        .then((response) => {
+            this.setState({c_response: response.data});
+        });
     }
 
     // Return info here about story
@@ -68,10 +74,11 @@ class StoryModal extends React.Component {
                     <button 
                         type="button" 
                         className="convert-btn btn btn-success"
-                        onClick={this.handleConversion}
+                        onClick={this.handleConversionRequest}
                     >
                         Convert
                     </button>
+                    <p>RESPONSE: {this.state.c_response}</p>
                 </Modal.Footer>
             </Modal>
         );

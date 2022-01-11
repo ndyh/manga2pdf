@@ -1,7 +1,9 @@
 /* .card { cursor: pointer; } */
 
 .card {
-    max-height: 125px;
+    border-radius: 25px;
+    max-height: 175px;
+    margin-bottom: 3.5%;
 }
 
 .card-body {
@@ -25,7 +27,7 @@
 .card-title {
     color: white;
     position: absolute;
-    top: 34%;
+    top: 41%;
     left: 50%;
     min-width: 80%;
     text-align: center;

@@ -18,10 +18,17 @@ class Story extends React.Component {
 		}
 	}
 
-	handleModalClose = () => {this.setState({modalState: false});}
+	handleModalClose = () => {
+		this.setState({
+			modalState: false,
+			m: false
+		});
+	}
 
 	handleFetchInfo = (e) => {
 		this.setState({modalState: true});
+		console.log(this.props.story[0])
+		console.log(e.target.value)
 		axios.get(`${API}f?s=${e.target.value}`)
 		.then((response) => {
 			this.setState({story_info: response.data})
