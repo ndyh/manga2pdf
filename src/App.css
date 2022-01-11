@@ -4,6 +4,13 @@
 	margin: 2% 4%;
 }
 
+.app-header {
+	/* width: 100%;
+	min-width: 100%;
+	background-color: rgba(25, 25, 25, 0.75);
+	margin-bottom: 1.5%; */
+}
+
 .title {
 	color: black;
 	text-decoration: none;

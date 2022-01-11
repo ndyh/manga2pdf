@@ -1,11 +1,11 @@
-.story-info-modal-footer {
-    padding: 0;
-}
+.story-info-modal-body { padding: 1%; }
 
-.chapter-selection-container {
-    padding: 0;
-}
+.description { margin: 0; }
 
-.convert-btn {
-    min-width: 98.75%;
-}
+.description > a { text-decoration: none; }
+
+.story-info-modal-footer { padding: 0; }
+
+.chapter-selection-container { padding: 0; }
+
+.convert-btn { min-width: 98.75%; }

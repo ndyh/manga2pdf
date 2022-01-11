@@ -35,31 +35,35 @@ class App extends React.Component {
 	render() {
 		return (
 			<div className='App'>
-				<h1><a  className='title' href='/'>Manga2PDF</a></h1>
-				<div className="search-form">
-					<form onSubmit={this.handleSubmit}>
-						<input 
-							type='text'
-							placeholder='Search for a series'
-							value={this.state.keyword}
-							onChange={this.handleChange}
-						/>
-						<input type='submit' name='Search' value='Search' />
-					</form>
+				<div className='app-header'>
+					<h1><a  className='title' href='/'>Manga2PDF</a></h1>
+					<div className="search-form">
+						<form onSubmit={this.handleSubmit}>
+							<input 
+								type='text'
+								placeholder='Search for a series'
+								value={this.state.keyword}
+								onChange={this.handleChange}
+							/>
+							<input type='submit' name='Search' value='Search' />
+						</form>
+					</div>
 				</div>
-				{this.state.isSubmitted &&
-				<div className='story-list card-deck'>
-					{ Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
-						<div className='row'>
-							{ this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (
-								<div className='col-6 col-md-4'>
-									<Story story={story} />
-								</div>
-							))}
-						</div>
-					))}
+				<div className='app-body'>
+					{this.state.isSubmitted &&
+					<div className='story-list card-deck'>
+						{ Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
+							<div className='row'>
+								{ this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (
+									<div className='col-6 col-md-4'>
+										<Story story={story} />
+									</div>
+								))}
+							</div>
+						))}
+					</div>
+					}
 				</div>
-				}
 			</div>
 		);
 	}

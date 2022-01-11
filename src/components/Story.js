@@ -10,7 +10,11 @@ class Story extends React.Component {
 		super(props); 
 		this.state = {
 			modalState: false,
-			story_info: ''
+			story_info: {
+				'desc': '',
+				'chapters': 0
+			},
+			m: false
 		}
 	}
 
@@ -20,9 +24,16 @@ class Story extends React.Component {
 		this.setState({modalState: true});
 		axios.get(`${API}f?s=${e.target.value}`)
 		.then((response) => {
-			console.log(e.target.value)
-			console.log(response.data)
 			this.setState({story_info: response.data})
+			if (this.state.story_info.desc.length > 170) {
+				this.setState(prevState => ({
+					story_info: {
+						...prevState.story_info,
+						desc: `${this.state.story_info.desc.substring(0, 170)}… `
+					},
+					m: true
+				}));
+			}
 		});
 	}
 
@@ -54,6 +65,8 @@ class Story extends React.Component {
 					handleModalClose={this.handleModalClose}
 					title={this.props.story[1].title}
 					info={this.state.story_info}
+					link={this.props.story[0]}
+					m = {this.state.m}
 				/>
 			</div>
 		);

@@ -35,7 +35,18 @@ class StoryModal extends React.Component {
                     <Modal.Title className='story-info-modal-title'>{this.props.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className='story-info-modal-body'>
-                    <div className='description'>{this.props.info.desc}</div>
+                    <div className='description-container'>{
+                        <p className='description'>
+                            {this.props.info.desc}
+                            {this.props.m && 
+                                <a href={this.props.link}
+                                    target='_blank'
+                                    rel='noreferrer'>
+                                    <i>more on Manganato</i>
+                                </a>
+                            }
+                        </p>
+                    }</div>
                 </Modal.Body>
                 <Modal.Footer className='story-info-modal-footer'>
                     <div className='chapter-selection-container'>
