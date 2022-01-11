@@ -35,8 +35,9 @@ def pull_story_info(html):
     return info
 
 def lambda_handler(event, context):
+    story_list, story_info = ''
     print(event)
-    if event['rawPath'] == '/search':
+    if event['rawPath'] == '/s':
         keyword = event['queryStringParameters']['q']
         # get list of series here
         story_list = pull_story_list(parser(f'https://manganato.com/search/story/{keyword}'))
@@ -44,3 +45,7 @@ def lambda_handler(event, context):
     elif event['rawPath'] == '/f':
         story_info = pull_story_info(parser(event['queryStringParameters']['s']))
         return story_info
+    elif event['rawPath'] == '/c':
+        # chap selection = event['queryStringParameters']['cs']
+        # need both story selection and chapter total val/all chapters
+        return 0
