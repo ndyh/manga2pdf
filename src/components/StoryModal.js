@@ -47,6 +47,9 @@ class StoryModal extends React.Component {
                             }
                         </p>
                     }</div>
+                    <div className='story-genre-container container'>
+                        {/* Import list of genres from manganato */}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer className='story-info-modal-footer'>
                     <div className='chapter-selection-container'>
