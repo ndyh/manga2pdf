@@ -21,7 +21,7 @@ class StoryModal extends React.Component {
 
     handleConversionRequest = () => {
         if (this.state.c_min < this.state.c_max && this.state.c_max <= this.props.info.chapters) {
-            axios.get(`${API}c?f=${this.state.c_min}&l=${this.state.c_max}`)
+            axios.get(`${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`)
             .then((response) => {
                 this.setState({c_response: response.data});
             });
