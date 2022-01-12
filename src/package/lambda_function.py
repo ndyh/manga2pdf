@@ -68,7 +68,7 @@ def pull_chapter_image(html, sid, chapter):
     chapter_image_container = html.find('div', {'class': 'container-chapter-reader'})
     for idx, img in enumerate(chapter_image_container.find_all('img')):
         src = img.get('src')
-        img_filepath = f'./tmp-{sid}/{chapter}/{idx+1}.jpg'
+        img_filepath = f'./tmp-{sid}/{str(chapter)}/{str(idx+1)}.jpg'
         with open(img_filepath, 'wb') as file:
             session = requests.Session()
             response = session.get(src, headers = HEADERS)
@@ -117,7 +117,7 @@ def lambda_handler(event, context):
         # download each image within manga image container
         # convert each image within each chapter container to pdf (chapter of pdf?)
         # host pdf in some manner to an accessable link, return link to user in new tab
-        
+
         series_link = event['queryStringParameters']['s']
         series_id = series_link[len(series_link) - 8:]
         chapter_min = event['queryStringParameters']['f']
@@ -134,12 +134,13 @@ def lambda_handler(event, context):
 
         for chapter in range(chapter_min, (chapter_max + 1)):
             chapter_dir = f'tmp-{series_id}/{str(chapter)}/'
+            print(chapter_dir)
             os.mkdir(chapter_dir)
             pull_chapter_image(
-                parser(f'{series_link}/chapter-{chapter}'),
+                parser(f'{series_link}/chapter-{str(chapter)}'),
                 series_id, chapter
             )
-            for img in alphanum_sort(os.listdir(f'{chapter_dir}')):
+            for img in alphanum_sort(os.listdir(chapter_dir)):
                 add_page_to_pdf(pdf, pdf_sizes, chapter_dir, img)
 
         pdf.output(file_name, 'F')
