@@ -127,12 +127,12 @@ def lambda_handler(event, context):
             'Portrait': {'w': 210, 'h': 297},
             'Landscape': {'w': 297, 'h': 210}
         }
-        file_name = f'{series_id}_{chapter_min}-{chapter_max}.pdf'
+        file_name = f'{series_id}_{str(chapter_min)}-{str(chapter_max)}.pdf'
         file_to_serve = ''
 
         print(file_name)
 
-        for chapter in range(chapter_min, (chapter_max + 1)):
+        for chapter in range(int(chapter_min), (int(chapter_max) + 1)):
             chapter_dir = f'tmp-{series_id}/{str(chapter)}/'
             print(chapter_dir)
             os.mkdir(chapter_dir)
