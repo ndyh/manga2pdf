@@ -27,7 +27,6 @@ class Story extends React.Component {
 
 	handleFetchInfo = (e) => {
 		this.setState({modalState: true});
-		console.log(this.props.story[0])
 		console.log(e.target.value)
 		axios.get(`${API}f?s=${e.target.value}`)
 		.then((response) => {
