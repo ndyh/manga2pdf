@@ -1,9 +1,15 @@
 /* .card { cursor: pointer; } */
 
 .card {
-    border-radius: 25px;
+    background-color:rgba(0, 0, 0, 0.568);
+    border-radius: 0px 0px 10px 10px;
     max-height: 175px;
     margin-bottom: 3.5%;
+}
+
+.card:hover {
+    box-shadow: 0px 0px 12px 2px rgba(17, 17, 17, 0.45);
+    transition: box-shadow 0.35s ease-in-out;
 }
 
 .card-body {
@@ -22,6 +28,7 @@
     margin-right: 0;
     min-width: 100%;
     min-height: 100%;
+    pointer-events: none;
 }
 
 .card-title {
@@ -40,4 +47,5 @@
 
 .fetch-info-btn {
     min-width: 100%;
+    border-radius: 0px 0px 10px 10px;
 }

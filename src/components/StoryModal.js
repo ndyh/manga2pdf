@@ -21,9 +21,11 @@ class StoryModal extends React.Component {
 
     handleConversionRequest = () => {
         if (this.state.c_min < this.state.c_max && this.state.c_max <= this.props.info.chapters) {
+            this.setState({c_response: 'Converting'})
             axios.get(`${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`)
             .then((response) => {
                 this.setState({c_response: response.data});
+                // window.open(this.state.c_response)
             });
         } else {
             this.setState({c_response: 'input error'})
@@ -38,14 +40,15 @@ class StoryModal extends React.Component {
                 className='story-info-modal'
                 show={this.props.modalState}
                 onHide={this.props.handleModalClose}
-                aria-labelledby="contained-modal-title-vcenter"
+                aria-labelledby='contained-modal-title-vcenter'
                 centered
             >
                 <Modal.Header className='story-info-modal-header' closeButton>
                     <Modal.Title className='story-info-modal-title'>{this.props.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className='story-info-modal-body'>
-                    <div className='description-container'>{
+                    <div className='description-container'>
+                        <h6>Description</h6>{
                         <p className='description'>
                             {this.props.info.desc}
                             {this.props.m && 
@@ -76,13 +79,12 @@ class StoryModal extends React.Component {
                         />
                     </div>
                     <button 
-                        type="button" 
-                        className="convert-btn btn btn-success"
+                        type='button' 
+                        className='convert-btn btn btn-success'
                         onClick={this.handleConversionRequest}
                     >
                         Convert
                     </button>
-                    <p>RESPONSE: {this.state.c_response}</p>
                 </Modal.Footer>
             </Modal>
         );

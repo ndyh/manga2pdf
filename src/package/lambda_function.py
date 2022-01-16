@@ -1,14 +1,11 @@
-import json
-import requests
-from bs4 import BeautifulSoup
-
-# To add to libraries folder and package for lambda copying
 import os
 import re
-import base64
-import tempfile
+import boto3
+import shutil
+import requests
 from PIL import Image
 from fpdf import FPDF
+from bs4 import BeautifulSoup
 
 HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
@@ -56,7 +53,7 @@ def pull_story_info(html):
     for chapter in chapter_container.find_all('li', {'class': 'a-h'}):
         counter = counter + 1
     info = {
-        'desc': desc,
+        'desc': desc[15:],
         'chapters': counter
     }
     return info
@@ -101,7 +98,21 @@ def add_page_to_pdf(pdf, pdf_sizes, chapter_dir, img):
             pdf.image(f'{chapter_dir}/{img[:img.find(".jpg")]}.png', 0, 0, w, h)
         except:
             return 'Failure to convert'
-            
+
+# pdf - pdf to upload to s3 bucket
+
+def upload_to_s3(pdf):
+    s3c = boto3.client('s3', region_name='us-east-2')
+    s3c.upload_file(f'/tmp/{pdf}', 'manga2pdf', pdf)
+
+# directory - directory to remove at end of runtime
+# pdf - pdf to remove at end of runtime, after uploaded
+
+def cleanup(directory, pdf):
+    shutil.rmtree(directory)
+    # os.rmdir(directory)
+    os.remove(pdf)
+
 def lambda_handler(event, context):
     story = ''
     print(event)
@@ -119,41 +130,31 @@ def lambda_handler(event, context):
         # convert each image within each chapter container to pdf (chapter of pdf?)
         # host pdf in some manner to an accessable link, return link to user in new tab
 
-        series_link = event['queryStringParameters']['s']
-        series_id = series_link[len(series_link) - 8:]
+        series_id = event['queryStringParameters']['s'][len(event['queryStringParameters']['s']) - 8:]
         chapter_min = event['queryStringParameters']['f']
         chapter_max = event['queryStringParameters']['l']
+        directory = f'/tmp/{series_id}'
+        file_name = f'/tmp/{series_id}_{str(chapter_min)}-{str(chapter_max)}.pdf'
         pdf = FPDF()
         pdf_sizes = {
             'Portrait': {'w': 210, 'h': 297},
             'Landscape': {'w': 297, 'h': 210}
         }
-        file_name = f'/tmp/{series_id}_{str(chapter_min)}-{str(chapter_max)}.pdf'
-        file_to_serve = ''
 
         print(file_name)
-        os.mkdir(f'/tmp/{series_id}')
+        os.mkdir(directory)
 
         for chapter in range(int(chapter_min), (int(chapter_max) + 1)):
             chapter_dir = f'/tmp/{series_id}/{str(chapter)}/'
             print(chapter_dir)
             os.mkdir(chapter_dir)
             pull_chapter_image(
-                parser(f'{series_link}/chapter-{str(chapter)}'), chapter_dir)
+                parser(f'https://readmanganato.com/manga-{series_id}/chapter-{str(chapter)}'), chapter_dir)
             for img in alphanum_sort(os.listdir(chapter_dir)):
                 add_page_to_pdf(pdf, pdf_sizes, chapter_dir, img)
-
         pdf.output(file_name, 'F')
-        with open(file_name, 'rb') as pdf_file:
-            file_to_serve = base64.b64encode(pdf_file.read())
-        
-        print(os.listdir('/tmp/'))
 
-        return {
-            'isBase64Encoded': True,
-            'statusCode': 200,
-            'headers': {
-                'content-type': 'application/pdf'
-            },
-            'body': file_to_serve
-        }
+        upload_to_s3(file_name[5:])
+        cleanup(directory, file_name)
+
+        return 'see s3'

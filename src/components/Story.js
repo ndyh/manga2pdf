@@ -31,11 +31,11 @@ class Story extends React.Component {
 		axios.get(`${API}f?s=${e.target.value}`)
 		.then((response) => {
 			this.setState({story_info: response.data})
-			if (this.state.story_info.desc.length > 170) {
+			if (this.state.story_info.desc.length > 190) {
 				this.setState(prevState => ({
 					story_info: {
 						...prevState.story_info,
-						desc: `${this.state.story_info.desc.substring(0, 170)}… `
+						desc: `${this.state.story_info.desc.substring(0, 190)}… `
 					},
 					m: true
 				}));
@@ -48,21 +48,23 @@ class Story extends React.Component {
 
 	render() {
 		return (
-			<div className="card">
-				<div className="card-body">
+			<div className='card'>
+				<div className='card-body'>
 					<img 
-						className="card-img-top img-fluid" 
+						className='card-img-top img-fluid' 
 						src={`${this.props.story[1].thumbnail}`} 
 						alt={this.props.story[1].title} 
 					/>
-					<h5 className="card-title">{this.props.story[1].title}</h5>
+					<h5 className='card-title'>{this.props.story[1].title}</h5>
 				</div>
-				<div className="card-footer">
+				<div className='card-footer'>
 					<button 
-						type="button" 
-						className="fetch-info-btn btn btn-primary"
+						type='button' 
+						className='fetch-info-btn btn btn-primary'
 						value={this.props.story[0]} 
-						onClick={this.handleFetchInfo}>
+						onClick={this.handleFetchInfo}
+						onMouseDown={e => e.preventDefault()}
+					>
 							Fetch Info
 					</button>
 				</div>
