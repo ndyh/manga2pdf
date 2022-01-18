@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 import boto3
 import shutil
 import requests
@@ -59,8 +60,7 @@ def pull_story_info(html):
     return info
 
 # html - parsed html from manga series chapter to pull images from
-# sid - series id (example -> manga-xy345678)
-# chapter - counter value
+# chapter_dir - directory to save images to
 
 def pull_chapter_image(html, chapter_dir):
     chapter_image_container = html.find('div', {'class': 'container-chapter-reader'})
@@ -78,17 +78,23 @@ def pull_chapter_image(html, chapter_dir):
                 file.write(block)
 
 # pdf - pdf to add images to
-# pdf_sizes - predefined sizes of pdf based on orientation
 # chapter_dir - directory to pull images from
 # img - image to add to pdf
 
-def add_page_to_pdf(pdf, pdf_sizes, chapter_dir, img):
+def add_page_to_pdf(pdf, chapter_dir, img):
+    print('Adding image to pdf')
+    pdf_sizes = {
+        'Portrait': {'w': 210, 'h': 297},
+        'Landscape': {'w': 297, 'h': 210}
+    }
+
     i = Image.open(f'{chapter_dir}/{img}')
     w, h = i.size
     w, h = float(w * 0.264583), float(h * 0.264583)
     orientation = 'Portrait' if w < h else 'Landscape'
     w = w if w < pdf_sizes[orientation]['w'] else pdf_sizes[orientation]['w']
     h = h if h < pdf_sizes[orientation]['h'] else pdf_sizes[orientation]['h']
+    
     pdf.add_page(orientation=orientation)
     try:
         pdf.image(f'{chapter_dir}/{img}', 0, 0, w, h)
@@ -101,21 +107,21 @@ def add_page_to_pdf(pdf, pdf_sizes, chapter_dir, img):
 
 # pdf - pdf to upload to s3 bucket
 
-def upload_to_s3(pdf):
-    s3c = boto3.client('s3', region_name='us-east-2')
-    s3c.upload_file(f'/tmp/{pdf}', 'manga2pdf', pdf)
+def upload_to_s3(file):
+    print(f'Uploading {file} to S3')
+    s3 = boto3.resource('s3')
+    s3.meta.client.upload_file(file, 'manga2pdf', file[5:])
 
 # directory - directory to remove at end of runtime
 # pdf - pdf to remove at end of runtime, after uploaded
 
-def cleanup(directory, pdf):
+def cleanup(directory, file):
     shutil.rmtree(directory)
     # os.rmdir(directory)
-    os.remove(pdf)
+    os.remove(file)
 
 def lambda_handler(event, context):
     story = ''
-    print(event)
     if event['rawPath'] == '/s':
         keyword = event['queryStringParameters']['q']
         # get list of series here
@@ -133,28 +139,24 @@ def lambda_handler(event, context):
         series_id = event['queryStringParameters']['s'][len(event['queryStringParameters']['s']) - 8:]
         chapter_min = event['queryStringParameters']['f']
         chapter_max = event['queryStringParameters']['l']
-        directory = f'/tmp/{series_id}'
-        file_name = f'/tmp/{series_id}_{str(chapter_min)}-{str(chapter_max)}.pdf'
+
+        directory = f'/tmp/{uuid.uuid4()}_{series_id}'
+        file_name = f'{directory}/{series_id}_{str(chapter_min)}-{str(chapter_max)}.pdf'
         pdf = FPDF()
-        pdf_sizes = {
-            'Portrait': {'w': 210, 'h': 297},
-            'Landscape': {'w': 297, 'h': 210}
-        }
 
-        print(file_name)
         os.mkdir(directory)
-
         for chapter in range(int(chapter_min), (int(chapter_max) + 1)):
-            chapter_dir = f'/tmp/{series_id}/{str(chapter)}/'
+            chapter_dir = f'{directory}/{str(chapter)}/'
             print(chapter_dir)
             os.mkdir(chapter_dir)
             pull_chapter_image(
-                parser(f'https://readmanganato.com/manga-{series_id}/chapter-{str(chapter)}'), chapter_dir)
+                parser(f'https://readmanganato.com/manga-{series_id}/chapter-{str(chapter)}'), 
+                chapter_dir
+            )
             for img in alphanum_sort(os.listdir(chapter_dir)):
-                add_page_to_pdf(pdf, pdf_sizes, chapter_dir, img)
+                add_page_to_pdf(pdf, chapter_dir, img)
+
         pdf.output(file_name, 'F')
+        upload_to_s3(file_name)
 
-        upload_to_s3(file_name[5:])
-        cleanup(directory, file_name)
-
-        return 'see s3'
+        return True

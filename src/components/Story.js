@@ -12,7 +12,7 @@ class Story extends React.Component {
 			modalState: false,
 			story_info: {
 				'desc': '',
-				'chapters': 0
+				'chapters': 0,
 			},
 			m: false
 		}
@@ -35,7 +35,7 @@ class Story extends React.Component {
 				this.setState(prevState => ({
 					story_info: {
 						...prevState.story_info,
-						desc: `${this.state.story_info.desc.substring(0, 190)}… `
+						desc: `${this.state.story_info.desc.substring(0, 190)}… `,
 					},
 					m: true
 				}));
@@ -74,6 +74,7 @@ class Story extends React.Component {
 					title={this.props.story[1].title}
 					info={this.state.story_info}
 					link={this.props.story[0]}
+					img={this.props.story[1].thumbnail}
 					m = {this.state.m}
 				/>
 			</div>

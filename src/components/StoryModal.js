@@ -24,8 +24,9 @@ class StoryModal extends React.Component {
             this.setState({c_response: 'Converting'})
             axios.get(`${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`)
             .then((response) => {
+                console.log(response.data)
                 this.setState({c_response: response.data});
-                // window.open(this.state.c_response)
+                
             });
         } else {
             this.setState({c_response: 'input error'})
@@ -43,7 +44,12 @@ class StoryModal extends React.Component {
                 aria-labelledby='contained-modal-title-vcenter'
                 centered
             >
-                <Modal.Header className='story-info-modal-header' closeButton>
+                <Modal.Header className='story-info-modal-header' closeButton closeVariant='white'>
+                    <img 
+						className='story-info-modal-img img-fluid' 
+						src={`${this.props.img}`} 
+						alt={this.props.title} 
+					/>
                     <Modal.Title className='story-info-modal-title'>{this.props.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className='story-info-modal-body'>

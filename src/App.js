@@ -37,17 +37,27 @@ class App extends React.Component {
 			<div className='App'>
 				<div className='app-header'>
 					<h1><a  className='title' href='/'>Manga2PDF</a></h1>
-					<div className="search-form">
 						<form onSubmit={this.handleSubmit}>
-							<input 
-								type='text'
-								placeholder='Search for a series'
-								value={this.state.keyword}
-								onChange={this.handleChange}
-							/>
-							<input type='submit' name='Search' value='Search' />
+							<div className='input-group'>
+								<input 
+									className='form-control'
+									type='text'
+									placeholder='Search for a series'
+									value={this.state.keyword}
+									onChange={this.handleChange}
+								/>
+								<div className='input-group-append'>
+									<button 
+										className='btn btn-primary'
+										type='submit' 
+										name='Search' 
+										value='Search' 
+									>
+										Search
+									</button>
+								</div>
+							</div>
 						</form>
-					</div>
 				</div>
 				<div className='app-body'>
 					{this.state.isSubmitted &&

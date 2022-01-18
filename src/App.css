@@ -1,21 +1,28 @@
 .App {
+	background-color: rgb(240, 240, 240);
 	align-items: center;
 	text-align: center;
 	margin: 2% 2%;
 }
 
 .app-header {
-	/* width: 100%;
-	min-width: 100%;
-	background-color: rgba(25, 25, 25, 0.75); */
 	margin-bottom: 2%;
 }
 
 .title {
-	color: black;
+	color: rgb(44, 44, 44);
 	text-decoration: none;
 }
 
 .title:hover {
-	color: black;
+	color: rgb(44, 44, 44);
+}
+
+.form-control {
+	background-color: rgb(240, 240, 240)
+}
+
+.form-control:focus {
+	background-color: rgb(255, 255, 255);
+	transition: background-color 0.25s ease-in-out;
 }
