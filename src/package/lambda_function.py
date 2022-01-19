@@ -112,14 +112,6 @@ def upload_to_s3(file):
     s3 = boto3.resource('s3')
     s3.meta.client.upload_file(file, 'manga2pdf', file[5:])
 
-# directory - directory to remove at end of runtime
-# pdf - pdf to remove at end of runtime, after uploaded
-
-def cleanup(directory, file):
-    shutil.rmtree(directory)
-    # os.rmdir(directory)
-    os.remove(file)
-
 def lambda_handler(event, context):
     story = ''
     if event['rawPath'] == '/s':
@@ -158,5 +150,6 @@ def lambda_handler(event, context):
 
         pdf.output(file_name, 'F')
         upload_to_s3(file_name)
+        shutil.rmtree(directory)
 
         return True

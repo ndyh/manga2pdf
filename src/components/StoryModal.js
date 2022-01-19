@@ -8,6 +8,7 @@ import {API} from '../.config';
 class StoryModal extends React.Component {
     constructor(props) {
         super(props);
+        this.handleConversionRequest = this.handleConversionRequest.bind(this)
         this.state = {
             c_min: 0,
             c_max: 0,
@@ -19,15 +20,15 @@ class StoryModal extends React.Component {
 
     handleMaxChange = (e) => {this.setState({c_max: e.target.value});}
 
-    handleConversionRequest = () => {
+    async handleConversionRequest() {
         if (this.state.c_min < this.state.c_max && this.state.c_max <= this.props.info.chapters) {
             this.setState({c_response: 'Converting'})
-            axios.get(`${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`)
-            .then((response) => {
-                console.log(response.data)
-                this.setState({c_response: response.data});
-                
-            });
+            const response = await axios.get(
+                `${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`, 
+                {timeout: 450000}
+            );
+            console.log(response.data);
+            this.setState({c_response: response.data});    
         } else {
             this.setState({c_response: 'input error'})
         }
