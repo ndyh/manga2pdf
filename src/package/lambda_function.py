@@ -128,6 +128,12 @@ def upload_to_s3(file):
     print(link)
     return link
 
+# series_id - manga series id
+# directory - directory to create and write to
+# file_name - name to be used during pdf creation and uploading
+# c_min - first chapter to pull
+# c_max - last chapter to pull
+
 def create_and_upload(series_id, directory, file_name, c_min, c_max):
     os.mkdir(directory)
     pdf = FPDF()
