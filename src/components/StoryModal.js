@@ -8,7 +8,6 @@ import {API} from '../.config';
 class StoryModal extends React.Component {
     constructor(props) {
         super(props);
-        this.handleConversionRequest = this.handleConversionRequest.bind(this)
         this.state = {
             c_min: 0,
             c_max: 0,
@@ -20,24 +19,24 @@ class StoryModal extends React.Component {
 
     handleMaxChange = (e) => {this.setState({c_max: e.target.value});}
 
-    async handleConversionRequest() {
+    handleConversionRequest = async () => {
         if (this.state.c_min < this.state.c_max && this.state.c_max <= this.props.info.chapters) {
-            this.setState({c_response: 'Converting'})
-            const response = await axios.get(
-                `${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`, 
-                {timeout: 450000}
-            );
-            console.log(response.data);
-            this.setState({c_response: response.data});    
+            try {
+                const response = await axios.get(
+                    `${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`, 
+                    {timeout: 420000}
+                );
+                console.log(response.data);
+            } catch (e) {
+                console.error(e);
+            } 
         } else {
             this.setState({c_response: 'input error'})
         }
     }
 
-    // Return info here about story
     render() {
         return (
-            // Vanilla bootstrap modal for testing purposes
             <Modal
                 className='story-info-modal'
                 show={this.props.modalState}
@@ -68,7 +67,7 @@ class StoryModal extends React.Component {
                         </p>
                     }</div>
                     <div className='story-genre-container container'>
-                        {/* Import list of genres from manganato */}
+                        {/* TODO: Import list of genres from manganato */}
                     </div>
                 </Modal.Body>
                 <Modal.Footer className='story-info-modal-footer'>

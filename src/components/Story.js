@@ -28,19 +28,20 @@ class Story extends React.Component {
 	handleFetchInfo = (e) => {
 		this.setState({modalState: true});
 		console.log(e.target.value)
-		axios.get(`${API}f?s=${e.target.value}`)
-		.then((response) => {
-			this.setState({story_info: response.data})
-			if (this.state.story_info.desc.length > 190) {
-				this.setState(prevState => ({
-					story_info: {
-						...prevState.story_info,
-						desc: `${this.state.story_info.desc.substring(0, 190)}… `,
-					},
-					m: true
-				}));
+		axios.get(`${API}f?s=${e.target.value}`).then(
+			(response) => {
+				this.setState({story_info: response.data})
+				if (this.state.story_info.desc.length > 190) {
+					this.setState(prevState => ({
+						story_info: {
+							...prevState.story_info,
+							desc: `${this.state.story_info.desc.substring(0, 190)}… `,
+						},
+						m: true
+					}));
+				}
 			}
-		});
+		);
 	}
 
 	// On each series, dl button fires GET to api about the series, lambda returns info about series in modal

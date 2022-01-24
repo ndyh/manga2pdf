@@ -15,21 +15,21 @@ class App extends React.Component {
 		}
 	}
 
-	handleChange = e => {this.setState({ keyword: e.target.value });} // Set keyword state to search bar text value
+	handleChange = (e) => {this.setState({ keyword: e.target.value });} // Set keyword state to search bar text value
 
-	handleSubmit = e => {
+	handleSubmit = (e) => {
 		e.preventDefault(); // Prevent form from default submission
 
 		// Take user keyword from search bar, make request to aws api to execute lambda function
 		// Return relevant data, set boolean to true to render list of data
-		axios.get(`${API}s?q=${this.state.keyword.replace(/ /g, '_')}`)
-		.then((response) => {
-			this.setState({
-				story_list: Object.entries(response.data),
-				isSubmitted: true,
-			});
-			console.log(this.state.story_list);
-		});
+		axios.get(`${API}s?q=${this.state.keyword.replace(/ /g, '_')}`).then(
+			(response) => {
+				this.setState({
+					story_list: Object.entries(response.data),
+					isSubmitted: true,
+				});
+			}
+		);
 	}
 
 	render() {

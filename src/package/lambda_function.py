@@ -1,14 +1,22 @@
 import os
 import re
 import uuid
+import json
 import boto3
 import shutil
 import requests
 from PIL import Image
 from fpdf import FPDF
 from bs4 import BeautifulSoup
+from botocore.client import Config
 
-HEADERS = {
+RESPONSE_HEADERS = {
+    'Content-Type' : 'application/json',
+    'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+    'Access-Control-Allow-Origin': '*'
+}
+
+SESSION_HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'referer': 'https://readmanganato.com'
@@ -69,7 +77,7 @@ def pull_chapter_image(html, chapter_dir):
         img_filepath = f'{chapter_dir}{str(idx+1)}.jpg'
         with open(img_filepath, 'wb') as file:
             session = requests.Session()
-            response = session.get(src, headers = HEADERS)
+            response = session.get(src, headers = SESSION_HEADERS)
             if not response.ok:
                 return response
             for block in response.iter_content(1024):
@@ -82,7 +90,6 @@ def pull_chapter_image(html, chapter_dir):
 # img - image to add to pdf
 
 def add_page_to_pdf(pdf, chapter_dir, img):
-    print('Adding image to pdf')
     pdf_sizes = {
         'Portrait': {'w': 210, 'h': 297},
         'Landscape': {'w': 297, 'h': 210}
@@ -105,51 +112,70 @@ def add_page_to_pdf(pdf, chapter_dir, img):
         except:
             return 'Failure to convert'
 
-# pdf - pdf to upload to s3 bucket
+# file - file to upload to s3 bucket and return dl link to
 
 def upload_to_s3(file):
+    bucket = 'manga2pdf'
     print(f'Uploading {file} to S3')
-    s3 = boto3.resource('s3')
-    s3.meta.client.upload_file(file, 'manga2pdf', file[5:])
+    s3 = boto3.client('s3', config=Config(connect_timeout=600))
+    s3.upload_file(file, bucket, file[5:])
+    # ExtraArgs={'ACL':'public-read'}
+    link = s3.generate_presigned_url(
+        'get_object', 
+        ExpiresIn=5000, 
+        Params={'Bucket': bucket, 'Key': file[5:]}
+    )
+    print(link)
+    return link
+
+def create_and_upload(series_id, directory, file_name, c_min, c_max):
+    os.mkdir(directory)
+    pdf = FPDF()
+
+    for chapter in range(int(c_min), (int(c_max) + 1)):
+        chapter_dir = f'{directory}/{str(chapter)}/'
+        print(chapter_dir)
+        os.mkdir(chapter_dir)
+        pull_chapter_image(
+            parser(f'https://readmanganato.com/manga-{series_id}/chapter-{str(chapter)}'), 
+            chapter_dir
+        )
+        for img in alphanum_sort(os.listdir(chapter_dir)):
+            add_page_to_pdf(pdf, chapter_dir, img)
+
+    pdf.output(file_name, 'F')
+    link = upload_to_s3(file_name)
+    shutil.rmtree(directory)
+    print(f'{directory} removed from /tmp/')
+    return link
 
 def lambda_handler(event, context):
-    story = ''
-    if event['rawPath'] == '/s':
+    if event['path'] == '/s':
         keyword = event['queryStringParameters']['q']
-        # get list of series here
         story_info = pull_story_list(parser(f'https://manganato.com/search/story/{keyword}'))
-        return story_info
-    elif event['rawPath'] == '/f':
+        return {
+            'statusCode': 200,
+            'headers': RESPONSE_HEADERS,
+            'body': json.dumps(story_info)
+        }
+    elif event['path'] == '/f':
         story = pull_story_info(parser(event['queryStringParameters']['s']))
-        return story
-    elif event['rawPath'] == '/c':
-        # loop through range of chapter min to chapter max
-        # download each image within manga image container
-        # convert each image within each chapter container to pdf (chapter of pdf?)
-        # host pdf in some manner to an accessable link, return link to user in new tab
-
+        return {
+            'statusCode': 200,
+            'headers': RESPONSE_HEADERS,
+            'body': json.dumps(story)
+        }
+    elif event['path'] == '/c':
         series_id = event['queryStringParameters']['s'][len(event['queryStringParameters']['s']) - 8:]
         chapter_min = event['queryStringParameters']['f']
         chapter_max = event['queryStringParameters']['l']
-
         directory = f'/tmp/{uuid.uuid4()}_{series_id}'
         file_name = f'{directory}/{series_id}_{str(chapter_min)}-{str(chapter_max)}.pdf'
-        pdf = FPDF()
 
-        os.mkdir(directory)
-        for chapter in range(int(chapter_min), (int(chapter_max) + 1)):
-            chapter_dir = f'{directory}/{str(chapter)}/'
-            print(chapter_dir)
-            os.mkdir(chapter_dir)
-            pull_chapter_image(
-                parser(f'https://readmanganato.com/manga-{series_id}/chapter-{str(chapter)}'), 
-                chapter_dir
-            )
-            for img in alphanum_sort(os.listdir(chapter_dir)):
-                add_page_to_pdf(pdf, chapter_dir, img)
+        link = create_and_upload(series_id, directory, file_name, chapter_min, chapter_max)
 
-        pdf.output(file_name, 'F')
-        upload_to_s3(file_name)
-        shutil.rmtree(directory)
-
-        return True
+        return {
+            'statusCode': 200,
+            'headers': RESPONSE_HEADERS,
+            'body': json.dumps(link)
+        }
