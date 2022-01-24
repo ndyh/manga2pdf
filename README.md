@@ -8,6 +8,6 @@ An application designed to fetch manga to convert them into a more portable form
 * Python
 * AWS
   * Amplify
-  * API Gateway
+  * Application Load Balancer
   * Lambda
   * S3 

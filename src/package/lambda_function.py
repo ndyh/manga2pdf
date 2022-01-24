@@ -10,11 +10,16 @@ from fpdf import FPDF
 from bs4 import BeautifulSoup
 from botocore.client import Config
 
+# RESPONSE_HEADERS - To circumvent triggering CORS
+
 RESPONSE_HEADERS = {
+    'Access-Control-Request-Headers': 'Content-Type,Access-Control-Allow-Headers,Access-Control-Allow-Origin', 
     'Content-Type' : 'application/json',
     'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
     'Access-Control-Allow-Origin': '*'
 }
+
+# SESSION_HEADERS - Acceptable headers for pulling images to write to tmp
 
 SESSION_HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
@@ -161,6 +166,7 @@ def lambda_handler(event, context):
         story_info = pull_story_list(parser(f'https://manganato.com/search/story/{keyword}'))
         return {
             'statusCode': 200,
+            'isBase64Encoded': False,
             'headers': RESPONSE_HEADERS,
             'body': json.dumps(story_info)
         }
@@ -168,6 +174,7 @@ def lambda_handler(event, context):
         story = pull_story_info(parser(event['queryStringParameters']['s']))
         return {
             'statusCode': 200,
+            'isBase64Encoded': False,
             'headers': RESPONSE_HEADERS,
             'body': json.dumps(story)
         }
@@ -182,6 +189,7 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
+            'isBase64Encoded': False,
             'headers': RESPONSE_HEADERS,
             'body': json.dumps(link)
         }

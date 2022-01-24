@@ -23,8 +23,9 @@ class StoryModal extends React.Component {
         if (this.state.c_min < this.state.c_max && this.state.c_max <= this.props.info.chapters) {
             try {
                 const response = await axios.get(
-                    `${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`, 
-                    {timeout: 420000}
+                    `${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`, {
+                        timeout: 420000
+                    }
                 );
                 console.log(response.data);
             } catch (e) {
