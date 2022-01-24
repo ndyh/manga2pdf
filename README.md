@@ -11,6 +11,7 @@ Accessible at: [to be added at a later date](/)
      - Single chapter selection to be added
 3. Conversion and downloading
    - After entering in the chapters to convert, click on 'Convert' to initiate a conversion request
+     - Once conversion has been completed, a 'Download' button will appear to download the PDF
 
 ## Technologies in use
 * HTML5/CSS3/JavaScript

@@ -11,7 +11,8 @@ class StoryModal extends React.Component {
         this.state = {
             c_min: 0,
             c_max: 0,
-            c_response: ''
+            link: '',
+            conversion: false
         }
     }
 
@@ -27,7 +28,7 @@ class StoryModal extends React.Component {
                         timeout: 420000
                     }
                 );
-                console.log(response.data);
+                this.setState({conversion: true, link: response.data});
             } catch (e) {
                 console.error(e);
             } 
@@ -36,7 +37,27 @@ class StoryModal extends React.Component {
         }
     }
 
+    // Build out front end further once conversion is complete
+    // If state of conversion = True, render button as 'Download' with target being the link to dl
+    // Else render the convert button with handleConversionRequest tied to it
+
     render() {
+        const conversion = this.state.conversion;
+        let button;
+        if (conversion) {
+            button = <button 
+                type='button' 
+                className='download-btn btn btn-primary' 
+                onClick={(e) => {window.open(this.state.link, '_blank');
+            }}>Download</button>
+        } else {
+            button = <button 
+                type='button' 
+                className='convert-btn btn btn-success' 
+                onClick={this.handleConversionRequest}
+            >Convert</button>
+        }
+
         return (
             <Modal
                 className='story-info-modal'
@@ -85,13 +106,7 @@ class StoryModal extends React.Component {
                             onChange={this.handleMaxChange} 
                         />
                     </div>
-                    <button 
-                        type='button' 
-                        className='convert-btn btn btn-success'
-                        onClick={this.handleConversionRequest}
-                    >
-                        Convert
-                    </button>
+                    {button}
                 </Modal.Footer>
             </Modal>
         );
