@@ -47,9 +47,7 @@
     pointer-events: none;
 }
 
-.card-footer {
-    padding: 0;
-}
+.card-footer {padding: 0;}
 
 .fetch-info-btn {
     min-width: 100%;

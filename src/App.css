@@ -5,22 +5,16 @@
 	margin: 2% 2%;
 }
 
-.app-header {
-	margin-bottom: 2%;
-}
+.app-header {margin-bottom: 2%;}
 
 .title {
 	color: rgb(44, 44, 44);
 	text-decoration: none;
 }
 
-.title:hover {
-	color: rgb(44, 44, 44);
-}
+.title:hover {color: rgb(44, 44, 44);}
 
-.form-control {
-	background-color: rgb(240, 240, 240)
-}
+.form-control {background-color: rgb(240, 240, 240)}
 
 .form-control:focus {
 	background-color: rgb(255, 255, 255);

@@ -11,8 +11,10 @@ class StoryModal extends React.Component {
         this.state = {
             c_min: 0,
             c_max: 0,
-            link: '',
-            conversion: false
+            in_progress: false,
+            c_error: '',
+            complete: false,
+            link: ''
         }
     }
 
@@ -23,39 +25,43 @@ class StoryModal extends React.Component {
     handleConversionRequest = async () => {
         if (this.state.c_min < this.state.c_max && this.state.c_max <= this.props.info.chapters) {
             try {
+                this.setState({in_progress: true});
                 const response = await axios.get(
                     `${API}c?s=${this.props.link}&f=${this.state.c_min}&l=${this.state.c_max}`, {
                         timeout: 420000
                     }
                 );
-                this.setState({conversion: true, link: response.data});
-            } catch (e) {
-                console.error(e);
-            } 
-        } else {
-            this.setState({c_response: 'input error'})
-        }
+                this.setState({complete: true, link: response.data, in_progress: false});
+            } catch (e) {this.setState({c_error: true});} 
+        } else {this.setState({c_error: true});}
     }
 
-    // Build out front end further once conversion is complete
-    // If state of conversion = True, render button as 'Download' with target being the link to dl
-    // Else render the convert button with handleConversionRequest tied to it
-
     render() {
-        const conversion = this.state.conversion;
         let button;
-        if (conversion) {
+        if (this.state.complete) {
             button = <button 
                 type='button' 
                 className='download-btn btn btn-primary' 
                 onClick={(e) => {window.open(this.state.link, '_blank');
             }}>Download</button>
-        } else {
+        } else if (this.state.c_error) {
+            button = <button 
+                type='button' 
+                className='convert-btn btn btn-danger' 
+                disabled
+            >Error!</button>
+        } else if (this.state.in_progress) {
+            button = <button 
+                type='button' 
+                className='convert-btn btn btn-success' 
+                disabled
+            >Converting</button>
+        } else { 
             button = <button 
                 type='button' 
                 className='convert-btn btn btn-success' 
                 onClick={this.handleConversionRequest}
-            >Convert</button>
+            >Convert</button>    
         }
 
         return (
@@ -93,18 +99,28 @@ class StoryModal extends React.Component {
                     </div>
                 </Modal.Body>
                 <Modal.Footer className='story-info-modal-footer'>
-                    <div className='chapter-selection-container'>
+                    <div className='chapter-selection-container container'>
                         <h6>Chapters: {this.props.info.chapters}</h6>
-                        <input 
-                            type='number' id='min' name='min' 
-                            min={1} max={this.state.c_max}
-                            onChange={this.handleMinChange}
-                        />
-                        <input 
-                            type='number' id='max' name='max' 
-                            min={this.state.c_min} max={this.props.info.chapters}
-                            onChange={this.handleMaxChange} 
-                        />
+                        <div className='input-group input-group-sm'>
+                            <span className='input-group-text' id='inputGroup-sizing-sm'>First</span>
+                            <input 
+                                className='form-control'
+                                type='number' id='min' name='min' 
+                                min={1} max={this.state.c_max}
+                                onChange={this.handleMinChange} 
+                                placeholder={1}
+                            />
+                        </div>
+                        <div className='input-group input-group-sm'>
+                            <span className='input-group-text' id='inputGroup-sizing-sm'>Last</span>
+                            <input 
+                                className='form-control' 
+                                type='number' id='max' name='max' 
+                                min={this.state.c_min} max={this.props.info.chapters}
+                                onChange={this.handleMaxChange} 
+                                placeholder={this.props.info.chapters}
+                            />
+                        </div>
                     </div>
                     {button}
                 </Modal.Footer>

@@ -166,7 +166,6 @@ def lambda_handler(event, context):
         story_info = pull_story_list(parser(f'https://manganato.com/search/story/{keyword}'))
         return {
             'statusCode': 200,
-            'isBase64Encoded': False,
             'headers': RESPONSE_HEADERS,
             'body': json.dumps(story_info)
         }
@@ -174,7 +173,6 @@ def lambda_handler(event, context):
         story = pull_story_info(parser(event['queryStringParameters']['s']))
         return {
             'statusCode': 200,
-            'isBase64Encoded': False,
             'headers': RESPONSE_HEADERS,
             'body': json.dumps(story)
         }
@@ -189,7 +187,6 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'isBase64Encoded': False,
             'headers': RESPONSE_HEADERS,
             'body': json.dumps(link)
         }
