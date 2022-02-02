@@ -5,6 +5,7 @@ import json
 import boto3
 import shutil
 import requests
+import threading
 from PIL import Image
 from fpdf import FPDF
 from bs4 import BeautifulSoup
@@ -24,7 +25,7 @@ RESPONSE_HEADERS = {
 SESSION_HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'referer': 'https://readmanganato.com'
+    'referer': 'https://readmanganato.com',
 }
 
 # list - list to alphanumerically sort and return
@@ -58,15 +59,19 @@ def pull_story_list(html):
             }
     return story_list
 
-# html - parsed html to pull manga info from (description, total chapters)
+# html - parsed html to pull manga info from (gengres, description, total chapters)
     
 def pull_story_info(html):
     counter = 0
+    genres = []
+    for g in (html.find('i', {'class': 'info-genres'}).parent.parent).find('td', {'class': 'table-value'}).find_all('a', {'class': 'a-h'}):
+        genres.append(g.text)
     desc = html.find('div', {'id': 'panel-story-info-description'}).text
     chapter_container = html.find('ul', {'class': 'row-content-chapter'})
-    for chapter in chapter_container.find_all('li', {'class': 'a-h'}):
+    for c in chapter_container.find_all('li', {'class': 'a-h'}):
         counter = counter + 1
     info = {
+        'genres': genres,
         'desc': desc[15:],
         'chapters': counter
     }
@@ -75,14 +80,14 @@ def pull_story_info(html):
 # html - parsed html from manga series chapter to pull images from
 # chapter_dir - directory to save images to
 
-def pull_chapter_image(html, chapter_dir):
+def pull_chapter_images(html, chapter_dir):
     chapter_image_container = html.find('div', {'class': 'container-chapter-reader'})
     for idx, img in enumerate(chapter_image_container.find_all('img')):
         src = img.get('src')
         img_filepath = f'{chapter_dir}{str(idx+1)}.jpg'
         with open(img_filepath, 'wb') as file:
             session = requests.Session()
-            response = session.get(src, headers = SESSION_HEADERS)
+            response = session.get(src, stream=False, headers=SESSION_HEADERS)
             if not response.ok:
                 return response
             for block in response.iter_content(1024):
@@ -99,14 +104,12 @@ def add_page_to_pdf(pdf, chapter_dir, img):
         'Portrait': {'w': 210, 'h': 297},
         'Landscape': {'w': 297, 'h': 210}
     }
-
     i = Image.open(f'{chapter_dir}/{img}')
     w, h = i.size
     w, h = float(w * 0.264583), float(h * 0.264583)
     orientation = 'Portrait' if w < h else 'Landscape'
     w = w if w < pdf_sizes[orientation]['w'] else pdf_sizes[orientation]['w']
     h = h if h < pdf_sizes[orientation]['h'] else pdf_sizes[orientation]['h']
-    
     pdf.add_page(orientation=orientation)
     try:
         pdf.image(f'{chapter_dir}/{img}', 0, 0, w, h)
@@ -122,7 +125,7 @@ def add_page_to_pdf(pdf, chapter_dir, img):
 def upload_to_s3(file):
     bucket = 'manga2pdf'
     print(f'Uploading {file} to S3')
-    s3 = boto3.client('s3', config=Config(connect_timeout=600))
+    s3 = boto3.client('s3', config=Config(connect_timeout=420))
     s3.upload_file(file, bucket, file[5:])
     # ExtraArgs={'ACL':'public-read'}
     link = s3.generate_presigned_url(
@@ -141,19 +144,17 @@ def upload_to_s3(file):
 
 def create_and_upload(series_id, directory, file_name, c_min, c_max):
     os.mkdir(directory)
-    pdf = FPDF()
-
+    pdf = FPDF() 
+    threads = []
     for chapter in range(int(c_min), (int(c_max) + 1)):
         chapter_dir = f'{directory}/{str(chapter)}/'
-        print(chapter_dir)
         os.mkdir(chapter_dir)
-        pull_chapter_image(
+        pull_chapter_images(
             parser(f'https://readmanganato.com/manga-{series_id}/chapter-{str(chapter)}'), 
             chapter_dir
         )
         for img in alphanum_sort(os.listdir(chapter_dir)):
             add_page_to_pdf(pdf, chapter_dir, img)
-
     pdf.output(file_name, 'F')
     link = upload_to_s3(file_name)
     shutil.rmtree(directory)

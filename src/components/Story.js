@@ -9,8 +9,10 @@ class Story extends React.Component {
 	constructor(props) {
 		super(props); 
 		this.state = {
+			isLoading: false,
 			modalState: false,
 			story_info: {
+				'genres': [],
 				'desc': '',
 				'chapters': 0,
 			},
@@ -25,10 +27,9 @@ class Story extends React.Component {
 		});
 	}
 
-	handleFetchInfo = (e) => {
-		this.setState({modalState: true});
-		console.log(e.target.value)
-		axios.get(`${API}f?s=${e.target.value}`).then(
+	handleFetchInfo = async (e) => {
+		this.setState({modalState: true, isLoading: true});
+		await axios.get(`${API}f?s=${e.target.value}`).then(
 			(response) => {
 				this.setState({story_info: response.data})
 				if (this.state.story_info.desc.length > 190) {
@@ -42,6 +43,7 @@ class Story extends React.Component {
 				}
 			}
 		);
+		this.setState({isLoading: false});
 	}
 
 	// On each series, dl button fires GET to api about the series, lambda returns info about series in modal
@@ -66,10 +68,11 @@ class Story extends React.Component {
 						onClick={this.handleFetchInfo}
 						onMouseDown={e => e.preventDefault()}
 					>
-							Fetch Info
+						Fetch Info
 					</button>
 				</div>
 				<StoryModal 
+					isLoading={this.state.isLoading}
 					modalState={this.state.modalState}
 					handleModalClose={this.handleModalClose}
 					title={this.props.story[1].title}

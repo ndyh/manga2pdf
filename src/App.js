@@ -62,9 +62,9 @@ class App extends React.Component {
 				<div className='app-body'>
 					{this.state.isSubmitted &&
 					<div className='story-list card-deck'>
-						{ Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
+						{Array(Math.ceil(this.state.story_list.length / 3)).fill().map((_, ri) => (
 							<div className='row'>
-								{ this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (
+								{this.state.story_list.slice(ri * 3, (ri * 3) + 3).map(story => (
 									<div className='col-6 col-md-4'>
 										<Story story={story} />
 									</div>
