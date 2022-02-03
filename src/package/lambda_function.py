@@ -5,14 +5,12 @@ import json
 import boto3
 import shutil
 import requests
-import threading
 from PIL import Image
 from fpdf import FPDF
 from bs4 import BeautifulSoup
 from botocore.client import Config
 
 # RESPONSE_HEADERS - To circumvent triggering CORS
-
 RESPONSE_HEADERS = {
     'Access-Control-Request-Headers': 'Content-Type,Access-Control-Allow-Headers,Access-Control-Allow-Origin', 
     'Content-Type' : 'application/json',
@@ -21,7 +19,6 @@ RESPONSE_HEADERS = {
 }
 
 # SESSION_HEADERS - Acceptable headers for pulling images to write to tmp
-
 SESSION_HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -29,19 +26,16 @@ SESSION_HEADERS = {
 }
 
 # list - list to alphanumerically sort and return
-
 def alphanum_sort(list):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(list, key=alphanum_key)
 
 # url - url to parse through beautifulsoup
-
 def parser(url):
     return BeautifulSoup(requests.get(url).content, 'html.parser')
 
-# html - parsed html including user query to pull list of relevant manga
-    
+# html - parsed html including user query to pull list of relevant manga    
 def pull_story_list(html):
     story_list = {}
     container = html.find('div', {'class': 'panel-search-story'})
@@ -59,8 +53,7 @@ def pull_story_list(html):
             }
     return story_list
 
-# html - parsed html to pull manga info from (gengres, description, total chapters)
-    
+# html - parsed html to pull manga info from (gengres, description, total chapters)    
 def pull_story_info(html):
     counter = 0
     genres = []
@@ -79,7 +72,6 @@ def pull_story_info(html):
 
 # html - parsed html from manga series chapter to pull images from
 # chapter_dir - directory to save images to
-
 def pull_chapter_images(html, chapter_dir):
     chapter_image_container = html.find('div', {'class': 'container-chapter-reader'})
     for idx, img in enumerate(chapter_image_container.find_all('img')):
@@ -98,7 +90,6 @@ def pull_chapter_images(html, chapter_dir):
 # pdf - pdf to add images to
 # chapter_dir - directory to pull images from
 # img - image to add to pdf
-
 def add_page_to_pdf(pdf, chapter_dir, img):
     pdf_sizes = {
         'Portrait': {'w': 210, 'h': 297},
@@ -121,7 +112,6 @@ def add_page_to_pdf(pdf, chapter_dir, img):
             return 'Failure to convert'
 
 # file - file to upload to s3 bucket and return dl link to
-
 def upload_to_s3(file):
     bucket = 'manga2pdf'
     print(f'Uploading {file} to S3')
@@ -141,7 +131,6 @@ def upload_to_s3(file):
 # file_name - name to be used during pdf creation and uploading
 # c_min - first chapter to pull
 # c_max - last chapter to pull
-
 def create_and_upload(series_id, directory, file_name, c_min, c_max):
     os.mkdir(directory)
     pdf = FPDF() 
