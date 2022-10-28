@@ -1,8 +1,11 @@
+# :warning: READ FIRST
+Manga2PDF is currently in an unusable state and is in the process of being rebuilt. While the frontend is still accessible, no conversion requests will be able to be fulfilled.
+
 # Manga2PDF
 An application designed to fetch manga to convert them into a more portable format.
 
 ## Demo
-**Accessible at**: [Demo Amplify App](https://master.d2oxo9qqretwhm.amplifyapp.com/)
+**Accessible at**: ~~[Demo Frontend](https://master.d2oxo9qqretwhm.amplifyapp.com/)~~
 #### Steps to use
 1. Search for a series
    - Enter in a manga series to convert to PDF
